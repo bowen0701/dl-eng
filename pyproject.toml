@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dl-eng"
+version = "0.1.0"
+description = "Deep Learning Research and Engineering"
+requires-python = ">=3.9"
+authors = [{ name = "Bowen Lee", email = "bowen0701@gmail.com" }]
+dependencies = [
+    "torch>=2.0.0",
+    "numpy>=1.21.0",
+    "PyYAML",
+]
+
+[tool.setuptools.packages.find]
+include = ["dl_eng*"]
+
+[tool.ruff]
+line-length = 127
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+follow_imports = "silent"
+disallow_untyped_defs = false
+check_untyped_defs = true
+warn_return_any = false
+strict_optional = true
