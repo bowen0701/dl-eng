@@ -13,7 +13,7 @@ class Config:
     seed: int = 42
     model_family: str = "transformer"
     task: str = "pretraining"
-    output_root: Path = Path("experiments")
+    output_root: Path = Path("projects")
     artifact_root: Path = Path("artifacts")
     extras: Dict[str, Any] = field(default_factory=dict)
 
