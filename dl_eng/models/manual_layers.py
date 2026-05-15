@@ -64,15 +64,27 @@ class Linear:
         return dX
 
 class ReLU:
-    """ReLU Activation with manual backward pass."""
+    """
+    ReLU Activation with manual backward pass implementation.
+
+    Element-wise operation: input and output shapes are identical.
+    """
     def forward(self, Z: np.ndarray) -> Tuple[np.ndarray, Dict[str, np.ndarray]]:
-        """Forward: A = max(0, Z)"""
+        """
+        Forward: A = max(0, Z)
+
+        Shapes: Z: (N, D), A: (N, D)
+        """
         A = np.maximum(0, Z)
         cache = {"Z": Z}
         return A, cache
 
     def backward(self, dA: np.ndarray, cache: Dict[str, np.ndarray]) -> np.ndarray:
-        """Backprop: dL/dZ = dL/dA * 1(Z > 0)   (gate: pass gradient where Z > 0, else 0)"""
+        """
+        Backprop: dL/dZ = dL/dA * 1(Z > 0)   (gate: pass gradient where Z > 0, else 0)
+
+        Shapes: dA: (N, D), dZ: (N, D)
+        """
         Z = cache["Z"]
         dZ = dA.copy()
         # Gradient is 0 where Z was <= 0, otherwise it's 1 * dA
