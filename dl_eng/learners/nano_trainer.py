@@ -101,10 +101,10 @@ def fit(
     """
     model = model.to(device)
 
-    for t in range(n_epochs):
+    for epoch in range(n_epochs):
         train_loss = _train(model, train_loader, loss_fn, optimizer, log_n_steps, device)  # noqa: E501
         val_loss = _validate(model, val_loader, loss_fn, device)
-        print(f"epoch {t + 1}/{n_epochs} train_loss: {train_loss:.4f}, val_loss: {val_loss:.4f}")  # noqa: E501
+        print(f"epoch {epoch + 1}/{n_epochs} train_loss: {train_loss:.4f}, val_loss: {val_loss:.4f}")  # noqa: E501
 
 
 def test(
@@ -119,6 +119,7 @@ def test(
         model: Trained neural network to evaluate.
         test_loader: DataLoader for test data.
         loss_fn: Loss function (e.g. nn.CrossEntropyLoss()).
+        device: Device to run on, e.g. "cpu" or "cuda".
 
     Returns:
         Average loss over the test set.
