@@ -8,7 +8,7 @@ def _train(
     train_loader: DataLoader,
     loss_fn: nn.Module,
     optimizer: torch.optim.Optimizer,
-    log_n_steps: int = 100,
+    log_n_steps: int = 50,
     device: str | torch.device = "cpu",
 ) -> float:
     """Run one training epoch, return average loss."""
@@ -78,7 +78,7 @@ def fit(
     loss_fn: nn.Module,
     optimizer: torch.optim.Optimizer,
     n_epochs: int = 1,
-    log_n_steps: int = 100,
+    log_n_steps: int = 50,
     device: str | torch.device = "cpu",
 ) -> None:
     """Train and validate model for n_epochs, logging loss each epoch.
