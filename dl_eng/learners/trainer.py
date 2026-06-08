@@ -125,6 +125,10 @@ class Trainer:
             writer = SummaryWriter(log_dir="runs/exp1")
             logger = TrainerLogger(writer)
 
+            model = nn.Linear(16, 1)
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+            loss_fn = nn.MSELoss()
+            
             trainer = Trainer()
             trainer.fit(model, train_loader, val_loader, loss_fn, optimizer, logger=logger)
         """
