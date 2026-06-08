@@ -48,6 +48,11 @@ class Config:
         return self.run_dir / "eval_curve.png"
 
     @property
+    def tensorboard_dir(self) -> Path:
+        """Path to the TensorBoard logs."""
+        return self.run_dir / "tensorboard"
+
+    @property
     def export_dir(self) -> Path:
         """Filesystem location for promoted artifacts."""
         return self.artifact_root / "exports"
