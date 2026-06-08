@@ -14,8 +14,7 @@ def _train(
     """Run one training epoch, return average loss."""
     model.train()
 
-    total_loss = 0.0
-    n_samples = 0
+    total_loss, total_samples = 0.0, 0
 
     for batch, (X, y) in enumerate(train_loader):
         X, y = X.to(device), y.to(device)
@@ -31,15 +30,12 @@ def _train(
 
         batch_loss = loss.item()
         total_loss += batch_loss * len(y)
-        n_samples += len(y)
+        total_samples += len(y)
 
         if (batch + 1) % log_n_steps == 0:
             print(f"step {batch + 1}/{len(train_loader)} batch loss: {batch_loss:.4f}")
 
-    if n_samples == 0:
-        return 0.0
-
-    return total_loss / n_samples
+    return total_loss / total_samples if total_samples > 0 else 0.0
 
 
 def _validate(
@@ -51,8 +47,7 @@ def _validate(
     """Run one validation epoch, return average loss."""
     model.eval()
 
-    total_loss = 0.0
-    n_samples = 0
+    total_loss, total_samples = 0.0, 0
 
     with torch.no_grad():
         for X, y in val_loader:
@@ -63,12 +58,9 @@ def _validate(
             loss = loss_fn(pred, y)
 
             total_loss += loss.item() * len(y)
-            n_samples += len(y)
+            total_samples += len(y)
 
-    if n_samples == 0:
-        return 0.0
-
-    return total_loss / n_samples
+    return total_loss / total_samples if total_samples > 0 else 0.0
 
 
 def fit(
@@ -97,7 +89,7 @@ def fit(
         model = nn.Linear(16, 1)
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
         loss_fn = nn.MSELoss()
-        fit(model, train_loader, val_loader, loss_fn, optimizer, n_epochs=10, device="cuda")
+        fit(model, train_loader, val_loader, loss_fn, optimizer, n_epochs=10)
     """
     model = model.to(device)
 
@@ -125,14 +117,12 @@ def test(
         Average loss over the test set.
 
     Usage:
-        loss = test(model, test_loader, nn.CrossEntropyLoss(), device="cuda")
-        print(f"Test loss: {loss:.4f}")
+        test_loss = test(model, test_loader, loss_fn)
     """
     model = model.to(device)
     model.eval()
 
-    total_loss = 0.0
-    n_samples = 0
+    total_loss, total_samples = 0.0, 0
 
     with torch.no_grad():
         for X, y in test_loader:
@@ -143,8 +133,6 @@ def test(
             loss = loss_fn(pred, y)
 
             total_loss += loss.item() * len(y)
-            n_samples += len(y)
+            total_samples += len(y)
 
-    if n_samples == 0:
-        return 0.0
-    return total_loss / n_samples
+    return total_loss / total_samples if total_samples > 0 else 0.0
