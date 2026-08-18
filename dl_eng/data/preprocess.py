@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from torch import Tensor
-from typing import Union
+from typing import Optional, Union
 
 ArrayLike = Union[np.ndarray, Tensor]
 
@@ -76,12 +76,21 @@ def preprocess_numpy(
     return X_train, y_train, X_val, y_val, X_train_mean, X_train_std
 
 
+def one_hot_encode_numpy(y: np.ndarray, n_classes: int) -> np.ndarray:
+    """y: (N,) integer. Returns (N, n_classes)."""
+    N = y.shape[0]
+
+    y_one_hot = np.zeros((N, n_classes))
+    y_one_hot[np.arange(N), y] = 1.0
+    return y_one_hot
+
+
 # ------------------------------------------------------------------
 # PyTorch
 # ------------------------------------------------------------------
 
 
-def shuffle_pytorch(
+def shuffle_torch(
     X: Tensor,  # X: (N, D)
     y: Tensor,  # y: (N,)
     generator: torch.Generator,
@@ -89,7 +98,7 @@ def shuffle_pytorch(
     """
     Usage:
         generator = torch.Generator().manual_seed(42)
-        X, y = shuffle_pytorch(X, y, generator)
+        X, y = shuffle_torch(X, y, generator)
     """
     N = X.shape[0]
 
@@ -97,7 +106,7 @@ def shuffle_pytorch(
     return X[idx], y[idx]
 
 
-def normalize_pytorch(
+def normalize_torch(
     X_train: Tensor,  # X_train: (N_train, D)
     X_val: Tensor,    # X_val: (N_val, D)
     eps: float = 1e-8,
@@ -111,7 +120,7 @@ def normalize_pytorch(
     return X_train, X_val, mean, std
 
 
-def preprocess_pytorch(
+def preprocess_torch(
     X: Tensor,  # X: (N, D)
     y: Tensor,  # y: (N,)
     generator: torch.Generator,
@@ -121,12 +130,21 @@ def preprocess_pytorch(
     """Returns normalized, split data."""
 
     # 1. Shuffle
-    X, y = shuffle_pytorch(X, y, generator)
+    X, y = shuffle_torch(X, y, generator)
 
     # 2. Train/val split
     X_train, y_train, X_val, y_val = train_test_split(X, y, val_ratio=val_ratio)
 
     # 3. Normalize (fit on train, apply to val)
-    X_train, X_val, X_train_mean, X_train_std = normalize_pytorch(X_train, X_val, eps=eps)
+    X_train, X_val, X_train_mean, X_train_std = normalize_torch(X_train, X_val, eps=eps)
 
     return X_train, y_train, X_val, y_val, X_train_mean, X_train_std
+
+
+def one_hot_encode_torch(y: Tensor, n_classes: int) -> Tensor:
+    """y: (N,) integer. Returns (N, n_classes)."""
+    N = y.shape[0]
+
+    y_one_hot = torch.zeros((N, n_classes))
+    y_one_hot[torch.arange(N), y] = 1.0
+    return y_one_hot
