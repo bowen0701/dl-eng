@@ -1,3 +1,5 @@
+from typing import Union
+
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -6,10 +8,10 @@ from torch.utils.data import DataLoader
 def _train(
     model: nn.Module,
     train_loader: DataLoader,
-    loss_fn: nn.Module,
     optimizer: torch.optim.Optimizer,
+    loss_fn: nn.Module,
     log_n_steps: int = 50,
-    device: str | torch.device = "cpu",
+    device: Union[str, torch.device] = "cpu",
 ) -> float:
     """Run one training epoch, return average loss."""
     model.train()
@@ -42,7 +44,7 @@ def _validate(
     model: nn.Module,
     val_loader: DataLoader,
     loss_fn: nn.Module,
-    device: str | torch.device = "cpu",
+    device: Union[str, torch.device] = "cpu",
 ) -> float:
     """Run one validation epoch, return average loss."""
     model.eval()
@@ -67,11 +69,11 @@ def fit(
     model: nn.Module,
     train_loader: DataLoader,
     val_loader: DataLoader,
-    loss_fn: nn.Module,
     optimizer: torch.optim.Optimizer,
+    loss_fn: nn.Module,
     n_epochs: int = 1,
     log_n_steps: int = 50,
-    device: str | torch.device = "cpu",
+    device: Union[str, torch.device] = "cpu",
 ) -> None:
     """Train and validate model for n_epochs, logging loss each epoch.
 
@@ -79,8 +81,8 @@ def fit(
         model: The neural network to train.
         train_loader: DataLoader for training data.
         val_loader: DataLoader for validation data.
-        loss_fn: Loss function (e.g. nn.CrossEntropyLoss()).
         optimizer: Optimizer (e.g. torch.optim.Adam).
+        loss_fn: Loss function (e.g. nn.CrossEntropyLoss()).
         n_epochs: Number of full passes over the training data.
         log_n_steps: Log training batch loss every this many steps.
         device: Device to run on, e.g. "cpu" or "cuda".
@@ -89,12 +91,12 @@ def fit(
         model = nn.Linear(16, 1)
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
         loss_fn = nn.MSELoss()
-        fit(model, train_loader, val_loader, loss_fn, optimizer, n_epochs=10)
+        fit(model, train_loader, val_loader, optimizer, loss_fn, n_epochs=10)
     """
     model = model.to(device)
 
     for epoch in range(n_epochs):
-        train_loss = _train(model, train_loader, loss_fn, optimizer, log_n_steps, device)  # noqa: E501
+        train_loss = _train(model, train_loader, optimizer, loss_fn, log_n_steps, device)  # noqa: E501
         val_loss = _validate(model, val_loader, loss_fn, device)
         print(f"epoch {epoch + 1}/{n_epochs} train_loss: {train_loss:.4f}, val_loss: {val_loss:.4f}")  # noqa: E501
 
@@ -103,7 +105,7 @@ def test(
     model: nn.Module,
     test_loader: DataLoader,
     loss_fn: nn.Module,
-    device: str | torch.device = "cpu",
+    device: Union[str, torch.device] = "cpu",
 ) -> float:
     """Evaluate model on test set, return average loss.
 

@@ -51,39 +51,43 @@ def optimizer(tiny_model):
     return torch.optim.SGD(tiny_model.parameters(), lr=0.01)
 
 
+# ------------------------------------------------------------------
 # _train
+# ------------------------------------------------------------------
 
 
-def test_train_returns_float(tiny_model, train_loader, loss_fn, optimizer):
+def test_train_returns_float(tiny_model, train_loader, optimizer, loss_fn):
     """_train should return a float epoch average loss."""
-    result = _train(tiny_model, train_loader, loss_fn, optimizer)
+    result = _train(tiny_model, train_loader, optimizer, loss_fn)
     assert isinstance(result, float)
 
 
-def test_train_loss_decreases(tiny_model, train_loader, loss_fn, optimizer):
+def test_train_loss_decreases(tiny_model, train_loader, optimizer, loss_fn):
     """Loss should decrease after sufficient training steps."""
-    loss_before = _train(tiny_model, train_loader, loss_fn, optimizer)
+    loss_before = _train(tiny_model, train_loader, optimizer, loss_fn)
     for _ in range(20):
-        _train(tiny_model, train_loader, loss_fn, optimizer)
-    loss_after = _train(tiny_model, train_loader, loss_fn, optimizer)
+        _train(tiny_model, train_loader, optimizer, loss_fn)
+    loss_after = _train(tiny_model, train_loader, optimizer, loss_fn)
     assert loss_after < loss_before
 
 
-def test_train_empty_loader_returns_zero(tiny_model, loss_fn, optimizer):
+def test_train_empty_loader_returns_zero(tiny_model, optimizer, loss_fn):
     """_train on empty loader should return 0.0."""
     empty = DataLoader(TensorDataset(torch.randn(0, 4), torch.randn(0, 1)))
-    assert _train(tiny_model, empty, loss_fn, optimizer) == 0.0
+    assert _train(tiny_model, empty, optimizer, loss_fn) == 0.0
 
 
 def test_train_logs_batch_loss(
-    tiny_model, train_loader, loss_fn, optimizer, capsys
+    tiny_model, train_loader, optimizer, loss_fn, capsys
 ):
     """_train should print batch loss every log_n_steps."""
-    _train(tiny_model, train_loader, loss_fn, optimizer, log_n_steps=2)
+    _train(tiny_model, train_loader, optimizer, loss_fn, log_n_steps=2)
     assert "batch loss" in capsys.readouterr().out
 
 
+# ------------------------------------------------------------------
 # _validate
+# ------------------------------------------------------------------
 
 
 def test_validate_returns_float(tiny_model, val_loader, loss_fn):
@@ -106,7 +110,9 @@ def test_validate_empty_loader_returns_zero(tiny_model, loss_fn):
     assert _validate(tiny_model, empty, loss_fn) == 0.0
 
 
+# ------------------------------------------------------------------
 # test
+# ------------------------------------------------------------------
 
 
 def test_test_returns_float(tiny_model, val_loader, loss_fn):
@@ -127,28 +133,30 @@ def test_test_empty_loader_returns_zero(tiny_model, loss_fn):
     assert test(tiny_model, empty, loss_fn) == 0.0
 
 
+# ------------------------------------------------------------------
 # fit
+# ------------------------------------------------------------------
 
 
-def test_fit_runs(tiny_model, train_loader, val_loader, loss_fn, optimizer):
+def test_fit_runs(tiny_model, train_loader, val_loader, optimizer, loss_fn):
     """Fit should complete without error."""
-    fit(tiny_model, train_loader, val_loader, loss_fn, optimizer, n_epochs=2)
+    fit(tiny_model, train_loader, val_loader, optimizer, loss_fn, n_epochs=2)
 
 
 def test_fit_model_on_device(
-    tiny_model, train_loader, val_loader, loss_fn, optimizer
+    tiny_model, train_loader, val_loader, optimizer, loss_fn
 ):
     """Fit should move model to specified device."""
-    fit(tiny_model, train_loader, val_loader, loss_fn, optimizer, device="cpu")
+    fit(tiny_model, train_loader, val_loader, optimizer, loss_fn, device="cpu")
     for p in tiny_model.parameters():
         assert p.device.type == "cpu"
 
 
 def test_fit_logs_epoch_loss(
-    tiny_model, train_loader, val_loader, loss_fn, optimizer, capsys
+    tiny_model, train_loader, val_loader, optimizer, loss_fn, capsys
 ):
     """Fit should print train_loss and val_loss for each epoch."""
-    fit(tiny_model, train_loader, val_loader, loss_fn, optimizer, n_epochs=2)
+    fit(tiny_model, train_loader, val_loader, optimizer, loss_fn, n_epochs=2)
     captured = capsys.readouterr()
     assert "train_loss" in captured.out
     assert "val_loss" in captured.out
