@@ -25,8 +25,8 @@ class Linear:
     
     def __init__(self, in_features: int, out_features: int):
         # He initialization for ReLU networks
-        self.W = np.random.randn(out_features, in_features) * np.sqrt(2.0 / in_features)
-        self.b = np.zeros((1, out_features))
+        self.W = np.random.randn(out_features, in_features) * np.sqrt(2.0 / in_features)  # (D_out, D_in)
+        self.b = np.zeros((1, out_features))  # (1, D_out)
         
         # Gradients stored after backward()
         self.dW = None
@@ -38,28 +38,29 @@ class Linear:
 
         Shapes: X: (N, D_in), W: (D_out, D_in), b: (1, D_out), Z: (N, D_out)
         """
-        Z = np.dot(X, self.W.T) + self.b
+        Z = X @ self.W.T + self.b  # (N, D_out)
         cache = {"X": X}
         return Z, cache
 
     def backward(self, dZ: np.ndarray, cache: Dict[str, np.ndarray]) -> np.ndarray:
         """
-        Backprop (chain rule through Z = X W^T + b):
+        Backprop (chain rule through Z = X W^T + b): 
             dL/dW = dZ^T @ X        shape: (D_out, D_in)
             dL/db = sum(dZ, axis=0) shape: (1, D_out)
             dL/dX = dZ @ W          shape: (N, D_in)
+        Reference: https://bowen0701.github.io/re-log/manual-layer/
         """
         X = cache["X"]
         batch_size = X.shape[0]
 
         # 1. Gradient wrt Weights: (out, batch) @ (batch, in) -> (out, in)
-        self.dW = np.dot(dZ.T, X)
+        self.dW = dZ.T @ X  # (D_out, D_in)
         
         # 2. Gradient wrt Bias: sum across batch
-        self.db = np.sum(dZ, axis=0, keepdims=True)
+        self.db = np.sum(dZ, axis=0, keepdims=True)  # (1, D_out)
         
         # 3. Gradient wrt Input (to pass to previous layer): (batch, out) @ (out, in) -> (batch, in)
-        dX = np.dot(dZ, self.W)
+        dX = dZ @ self.W  # (N, D_in)
         
         return dX
 
@@ -75,7 +76,7 @@ class ReLU:
 
         Shapes: Z: (N, D), A: (N, D)
         """
-        A = np.maximum(0, Z)
+        A = np.maximum(0, Z)  # (N, D)
         cache = {"Z": Z}
         return A, cache
 
