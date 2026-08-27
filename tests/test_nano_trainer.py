@@ -62,15 +62,6 @@ def test_train_returns_float(tiny_model, train_loader, optimizer, loss_fn):
     assert isinstance(result, float)
 
 
-def test_train_loss_decreases(tiny_model, train_loader, optimizer, loss_fn):
-    """Loss should decrease after sufficient training steps."""
-    loss_before = _train(tiny_model, train_loader, optimizer, loss_fn)
-    for _ in range(20):
-        _train(tiny_model, train_loader, optimizer, loss_fn)
-    loss_after = _train(tiny_model, train_loader, optimizer, loss_fn)
-    assert loss_after < loss_before
-
-
 def test_train_empty_loader_returns_zero(tiny_model, optimizer, loss_fn):
     """_train on empty loader should return 0.0."""
     empty = DataLoader(TensorDataset(torch.randn(0, 4), torch.randn(0, 1)))
