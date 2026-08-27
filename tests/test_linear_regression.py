@@ -65,7 +65,7 @@ def test_pytorch_recovers_weights(synthetic_data):
     train_loader = DataLoader(TensorDataset(X_train_t, y_train_t), batch_size=32, shuffle=True)
     val_loader = DataLoader(TensorDataset(X_val_t, y_val_t), batch_size=32, shuffle=False)
 
-    fit(model, train_loader, val_loader, loss_fn, optimizer, n_epochs=200)
+    fit(model, train_loader, val_loader, optimizer, loss_fn, n_epochs=200)
 
     w_learned = model.fc1.weight.detach().numpy().flatten()
     b_learned = model.fc1.bias.detach().numpy().item()
