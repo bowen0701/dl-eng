@@ -22,6 +22,7 @@ dl-eng/
 │       │   └── ...
 │       ├── configs/
 │       │   └── config.yaml     # Hyperparameters and paths
+│       ├── notebooks/          # Project-specific notebooks
 │       ├── runs/               # Git-ignored; run outputs land here
 │       │   └── <run_id>/       # e.g., {name}_{yyyymmdd}_{timestamp}_s{seed}_g{git_hash}
 │       │       ├── config.yaml
@@ -34,14 +35,9 @@ dl-eng/
 │       ├── eval.py             # Evaluation entrypoint
 │       ├── pyproject.toml
 │       └── README.md
-├── exports/                    # Frozen, versioned model releases
-│   └── <project_v0.x>/         # e.g., diffusion_v0.1
-│       ├── config.yaml
-│       ├── export_metadata.yaml
-│       └── checkpoints/
-├── scripts/                    # Utility scripts (promotion, plotting)
 ├── tests/                      # Integration and unit tests
-├── notebooks/                  # Exploratory notebooks
+├── exports/                    # (Placeholder) Frozen, versioned model releases
+├── scripts/                    # (Placeholder) Utility scripts
 ├── pyproject.toml
 └── README.md
 ```
@@ -90,22 +86,18 @@ make install
 | `make format`    | Format with ruff                |
 | `make typecheck` | Type-check `dl_eng/` with mypy  |
 
-## Running a Project
+## Projects
+
+Each project under `projects/<project>/` currently contains exploratory notebooks. Active projects: `linear_regression`, `pca_svd`, `correspondence_analysis`.
+
+### Running a Project
 
 ```bash
 python projects/<project>/train.py
 python projects/<project>/eval.py
 ```
 
-Training writes per-run outputs under `projects/<project>/runs/<run_id>/`, including `config.yaml`, `train_metrics.csv`, `eval_metrics.csv`, `train_curve.png`, `eval_curve.png`, and `checkpoints/`.
-
-## Promoting to Exports
-
-Once a run is ready for reuse, promote it into the exports bucket:
-```bash
-python scripts/promote_run_to_export.py --run_id <run_id> --version 0.1
-```
-Artifacts are stored in `exports/<project_v0.x>/`.
+Training writes per-run outputs under `projects/<project>/runs/<run_id>/`.
 
 ## Engineering Standards
 - **Linting / Formatting**: Managed via `ruff`.
