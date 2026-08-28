@@ -51,7 +51,6 @@ class Linear:
         Reference: https://bowen0701.github.io/re-log/manual-layer/
         """
         X = cache["X"]
-        batch_size = X.shape[0]
 
         # 1. Gradient wrt Weights: (out, batch) @ (batch, in) -> (out, in)
         self.dW = dZ.T @ X  # (D_out, D_in)
