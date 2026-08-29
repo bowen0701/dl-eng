@@ -24,7 +24,7 @@ def test_linear_layer_backward():
     z_manual, cache_linear = linear_manual.forward(x_np)
     z_torch = linear_torch(x_torch)
     
-    assert np.allclose(z_manual, z_torch.detach().numpy(), atol=1e-5)
+    np.testing.assert_allclose(z_manual, z_torch.detach().numpy(), atol=1e-5)
     
     # Backward
     dz_np = np.random.randn(*z_manual.shape).astype(np.float32)
@@ -34,9 +34,9 @@ def test_linear_layer_backward():
     z_torch.backward(dz_torch)
     
     # Assertions
-    assert np.allclose(linear_manual.dW, linear_torch.weight.grad.numpy(), atol=1e-5)
-    assert np.allclose(linear_manual.db.flatten(), linear_torch.bias.grad.numpy(), atol=1e-5)
-    assert np.allclose(dx_manual, x_torch.grad.numpy(), atol=1e-5)
+    np.testing.assert_allclose(linear_manual.dW, linear_torch.weight.grad.numpy(), atol=1e-5)
+    np.testing.assert_allclose(linear_manual.db.flatten(), linear_torch.bias.grad.numpy(), atol=1e-5)
+    np.testing.assert_allclose(dx_manual, x_torch.grad.numpy(), atol=1e-5)
 
 def test_relu_layer_backward():
     """Verify ReLU layer gradients against PyTorch autograd."""
@@ -54,7 +54,7 @@ def test_relu_layer_backward():
     a_manual, cache_relu = relu_manual.forward(z_np)
     a_torch = relu_torch(z_torch)
     
-    assert np.allclose(a_manual, a_torch.detach().numpy(), atol=1e-5)
+    np.testing.assert_allclose(a_manual, a_torch.detach().numpy(), atol=1e-5)
     
     # Backward
     da_np = np.random.randn(*a_manual.shape).astype(np.float32)
@@ -62,4 +62,4 @@ def test_relu_layer_backward():
     
     dz_manual = relu_manual.backward(da_np, cache_relu)
     
-    assert np.allclose(dz_manual, z_torch.grad.numpy(), atol=1e-5)
+    np.testing.assert_allclose(dz_manual, z_torch.grad.numpy(), atol=1e-5)
