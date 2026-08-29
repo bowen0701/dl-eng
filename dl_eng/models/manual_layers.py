@@ -2,26 +2,25 @@ import numpy as np
 from typing import Tuple, Dict, Any
 
 class Linear:
+    """Linear Layer with manual backward pass implementation.
+
+    Architecture Note: Stateless/Functional Pattern
+    ------------------------------------------------
+    This implementation follows a stateless pattern where the layer does not
+    internally store the forward pass data (X). Instead, it returns a 'cache'.
+
+    Why this pattern?
+    1. Thread-Safety: Allows the same layer instance to be used in parallel.
+    2. Weight Sharing: The same layer can be called multiple times in a single
+       computational graph without overwriting internal state.
+    3. Explicit Backprop: Clearly demonstrates exactly which tensors from the
+       forward pass are required to compute gradients.
+
+    Who 'catches' the cache?
+    In a full framework, a 'Model' or 'Sequential' container stores these
+    caches in a list during forward() and provides them back to the layers
+    in reverse order during backward().
     """
-    Linear Layer with manual backward pass implementation.
-	
-	Architecture Note: Stateless/Functional Pattern
-	----------------------------------------------
-	This implementation follows a stateless pattern where the layer does not 
-	internally store the forward pass data (X). Instead, it returns a 'cache'.
-	
-	Why this pattern?
-	1. Thread-Safety: Allows the same layer instance to be used in parallel.
-	2. Weight Sharing: The same layer can be called multiple times in a single 
-	   computational graph without overwriting internal state.
-	3. Explicit Backprop: Clearly demonstrates exactly which tensors from the 
-	   forward pass are required to compute gradients.
-	
-	Who 'catches' the cache? 
-	In a full framework, a 'Model' or 'Sequential' container stores these 
-	caches in a list during forward() and provides them back to the layers 
-	in reverse order during backward().
-	"""
     
     def __init__(self, in_features: int, out_features: int):
         # He initialization for ReLU networks
@@ -33,8 +32,7 @@ class Linear:
         self.db = None
 
     def forward(self, X: np.ndarray) -> Tuple[np.ndarray, Dict[str, np.ndarray]]:
-        """
-        Forward: Z = X W^T + b
+        """Forward: Z = X W^T + b.
 
         Shapes: X: (N, D_in), W: (D_out, D_in), b: (1, D_out), Z: (N, D_out)
         """
@@ -43,11 +41,11 @@ class Linear:
         return Z, cache
 
     def backward(self, dZ: np.ndarray, cache: Dict[str, np.ndarray]) -> np.ndarray:
-        """
-        Backprop (chain rule through Z = X W^T + b): 
-            dL/dW = dZ^T @ X        shape: (D_out, D_in)
-            dL/db = sum(dZ, axis=0) shape: (1, D_out)
-            dL/dX = dZ @ W          shape: (N, D_in)
+        """Backprop (chain rule through Z = X W^T + b).
+
+        dL/dW = dZ^T @ X        shape: (D_out, D_in)
+        dL/db = sum(dZ, axis=0) shape: (1, D_out)
+        dL/dX = dZ @ W          shape: (N, D_in)
         Reference: https://bowen0701.github.io/re-log/manual-layer/
         """
         X = cache["X"]
@@ -64,14 +62,12 @@ class Linear:
         return dX
 
 class ReLU:
-    """
-    ReLU Activation with manual backward pass implementation.
+    """ReLU Activation with manual backward pass implementation.
 
     Element-wise operation: input and output shapes are identical.
     """
     def forward(self, Z: np.ndarray) -> Tuple[np.ndarray, Dict[str, np.ndarray]]:
-        """
-        Forward: A = max(0, Z)
+        """Forward: A = max(0, Z).
 
         Shapes: Z: (N, D), A: (N, D)
         """
@@ -80,8 +76,7 @@ class ReLU:
         return A, cache
 
     def backward(self, dA: np.ndarray, cache: Dict[str, np.ndarray]) -> np.ndarray:
-        """
-        Backprop: dL/dZ = dL/dA * 1(Z > 0)   (gate: pass gradient where Z > 0, else 0)
+        """Backprop: dL/dZ = dL/dA * 1(Z > 0) (gate: pass gradient where Z > 0, else 0).
 
         Shapes: dA: (N, D), dZ: (N, D)
         """

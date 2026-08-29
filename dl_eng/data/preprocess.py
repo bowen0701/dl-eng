@@ -16,8 +16,9 @@ def shuffle_numpy(
     y: np.ndarray,  # y: (N,)
     rng: np.random.Generator,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Usage: 
+    """Shuffle arrays in unison.
+
+    Usage:
         rng: np.random.Generator = np.random.default_rng(42)
         X, y = shuffle_numpy(X, y, rng)
     """
@@ -95,7 +96,8 @@ def shuffle_torch(
     y: Tensor,  # y: (N,)
     generator: torch.Generator,
 ) -> tuple[Tensor, Tensor]:
-    """
+    """Shuffle tensors in unison.
+
     Usage:
         generator = torch.Generator().manual_seed(42)
         X, y = shuffle_torch(X, y, generator)
