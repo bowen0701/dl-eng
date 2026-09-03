@@ -5,14 +5,15 @@ from dl_eng.models.manual_layers import Linear, ReLU
 
 def test_linear_layer_backward():
     """Verify Linear layer gradients against PyTorch autograd."""
+    rng = np.random.default_rng(42)
     batch_size, in_features, out_features = 2, 3, 2
-    
+
     # Input data
-    x_np = np.random.randn(batch_size, in_features).astype(np.float32)
+    x_np = rng.standard_normal((batch_size, in_features)).astype(np.float32)
     x_torch = torch.from_numpy(x_np).requires_grad_(True)
     
     # Setup manual and torch layers
-    linear_manual = Linear(in_features, out_features)
+    linear_manual = Linear(in_features, out_features, rng=rng)
     linear_torch = nn.Linear(in_features, out_features)
     
     # Sync weights
@@ -27,7 +28,7 @@ def test_linear_layer_backward():
     np.testing.assert_allclose(z_manual, z_torch.detach().numpy(), atol=1e-5)
     
     # Backward
-    dz_np = np.random.randn(*z_manual.shape).astype(np.float32)
+    dz_np = rng.standard_normal(z_manual.shape).astype(np.float32)
     dz_torch = torch.from_numpy(dz_np)
     
     dx_manual = linear_manual.backward(dz_np, cache_linear)
@@ -40,10 +41,11 @@ def test_linear_layer_backward():
 
 def test_relu_layer_backward():
     """Verify ReLU layer gradients against PyTorch autograd."""
+    rng = np.random.default_rng(42)
     batch_size, features = 4, 5
-    
+
     # Input data
-    z_np = np.random.randn(batch_size, features).astype(np.float32)
+    z_np = rng.standard_normal((batch_size, features)).astype(np.float32)
     z_torch = torch.from_numpy(z_np).requires_grad_(True)
     
     # Setup
@@ -57,7 +59,7 @@ def test_relu_layer_backward():
     np.testing.assert_allclose(a_manual, a_torch.detach().numpy(), atol=1e-5)
     
     # Backward
-    da_np = np.random.randn(*a_manual.shape).astype(np.float32)
+    da_np = rng.standard_normal(a_manual.shape).astype(np.float32)
     a_torch.backward(torch.from_numpy(da_np))
     
     dz_manual = relu_manual.backward(da_np, cache_relu)
