@@ -67,10 +67,10 @@ def test_pytorch_recovers_weights(synthetic_data):
 
     fit(model, train_loader, val_loader, optimizer, loss_fn, n_epochs=200)
 
-    w_learned = model.fc1.weight.detach().numpy().flatten()
-    b_learned = model.fc1.bias.detach().numpy().item()
+    w = model.fc1.weight.detach().numpy().flatten()
+    b = model.fc1.bias.detach().numpy().item()
 
-    np.testing.assert_allclose(w_learned, W_TRUE, atol=0.2)
-    np.testing.assert_allclose(b_learned, B_TRUE, atol=0.2)
+    np.testing.assert_allclose(w, W_TRUE, atol=0.2)
+    np.testing.assert_allclose(b, B_TRUE, atol=0.2)
 
 
