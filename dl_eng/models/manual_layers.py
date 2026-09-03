@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, Dict, Any
+from typing import Optional, Tuple, Dict, Any
 
 class Linear:
     """Linear Layer with manual backward pass implementation.
@@ -22,9 +22,10 @@ class Linear:
     in reverse order during backward().
     """
     
-    def __init__(self, in_features: int, out_features: int):
+    def __init__(self, in_features: int, out_features: int, rng: Optional[np.random.Generator] = None):
         # He initialization for ReLU networks
-        self.W = np.random.randn(out_features, in_features) * np.sqrt(2.0 / in_features)  # (D_out, D_in)
+        rng = rng or np.random.default_rng()
+        self.W = rng.standard_normal((out_features, in_features)) * np.sqrt(2.0 / in_features)  # (D_out, D_in)
         self.b = np.zeros((1, out_features))  # (1, D_out)
         
         # Gradients stored after backward()
