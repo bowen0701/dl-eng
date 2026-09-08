@@ -24,9 +24,9 @@ def linear_regression_numpy(
         loss = mse_loss(y, y_hat)
 
         # Backward: dL/dw = (2/N) X^T (y_hat - y), dL/db = (2/N) sum(y_hat - y)
-        err = y_hat - y
-        dw = (2 / N) * X.T @ err
-        db = (2 / N) * np.sum(err)
+        dz = (2 / N) * (y_hat - y)
+        dw = X.T @ dz
+        db = np.sum(dz)
 
         # Update.
         w -= lr * dw
